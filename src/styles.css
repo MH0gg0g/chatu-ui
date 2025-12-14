@@ -1,1 +1,86 @@
-/* You can add global styles to this file, and also import other style files */
+:root{
+  --bs-body-bg: #0d1117;
+  --bs-body-color: #c9d1d9;
+  --bs-card-bg: #0f1720;
+  --bs-accent: #7dd3fc;
+  --accent-1: #7dd3fc; 
+  --accent-2: #a78bfa; 
+  --accent-3: #f472b6; 
+  --card-gradient: linear-gradient(135deg, rgba(122,211,252,0.06), rgba(167,139,250,0.04));
+  --glass-border: rgba(255,255,255,0.03);
+  --muted: #9aa7b2;
+  --success: #34d399;
+}
+body{
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+.card, .bg-card{
+  background-color: var(--bs-card-bg) !important;
+  color: var(--bs-body-color) !important;
+  border: 1px solid var(--glass-border);
+  background-image: var(--card-gradient);
+  box-shadow: 0 6px 18px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.01);
+}
+.theme-accent{
+  color: var(--bs-accent);
+}
+.chat-window{
+  height: 60vh;
+  overflow-y: auto;
+}
+.message-me{ text-align: right; }
+.message-other{ text-align: left; }
+.message-bubble{
+  display: inline-block;
+  padding: .5rem .75rem;
+  border-radius: .5rem;
+  margin: .25rem 0;
+}
+.message-me .message-bubble{ background: linear-gradient(135deg,#084b66,#06688a); color: #e6f7ff; }
+.message-other .message-bubble{ background: linear-gradient(135deg,#14303a,#1f3a5a); color: #e6f7ff; }
+
+.card-top{
+  padding: .5rem 0 .75rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.02);
+  margin-bottom: .75rem;
+}
+.gradient-text{
+  background: linear-gradient(90deg,var(--accent-1),var(--accent-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.pill{
+  display: inline-block;
+  padding: .18rem .5rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg,var(--accent-2),var(--accent-3));
+  color: #071022;
+  font-weight: 600;
+  box-shadow: 0 3px 8px rgba(167,139,250,0.08);
+}
+.badge-online{
+  display:inline-block;
+  padding: .2rem .45rem;
+  border-radius: .4rem;
+  background: linear-gradient(90deg,var(--success),#06b6d4);
+  color: #02121a;
+  font-size: .85rem;
+}
+
+.chat-window::-webkit-scrollbar{ width:10px; }
+.chat-window::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.06); border-radius:10px; }
+.chat-window::-webkit-scrollbar-track{ background: transparent; }
+
+.form-focus:focus{ outline: none; box-shadow: 0 0 0 4px rgba(125,211,252,0.06); border-color: var(--accent-1); }
+
+.card .small-muted{ color: var(--muted); font-size: .85rem; }
+
+.brand{
+  font-weight: 700;
+  letter-spacing: .6px;
+  font-size: 1.1rem;
+}
+
+.accent-underline{ border-bottom: 2px solid transparent; background-image: linear-gradient(90deg,var(--accent-1),var(--accent-2)); background-repeat: no-repeat; background-size: 0 2px; transition: background-size .25s; }
+.accent-underline:hover{ background-size: 100% 2px; }

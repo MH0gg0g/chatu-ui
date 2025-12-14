@@ -1,0 +1,29 @@
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6">
+            <div class="card p-4 bg-card">
+                <div class="card-top">
+                    <h3 class="mb-3 gradient-text">Register</h3>
+                </div>
+                <form (ngSubmit)="onSubmit()">
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input class="form-control" [(ngModel)]="username" name="username" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" [(ngModel)]="email" name="email" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" [(ngModel)]="password" name="password" required />
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button class="btn btn-primary" type="submit">Register</button>
+                        <a routerLink="/login" class="btn btn-link accent-link">Login</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
