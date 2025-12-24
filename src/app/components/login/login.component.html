@@ -18,6 +18,7 @@
                         <button class="btn btn-primary" type="submit">Login</button>
                         <a routerLink="/register" class="btn btn-link accent-link">Register</a>
                     </div>
+                    @if (errorMsg()) { <div class="alert alert-danger"> {{ errorMsg() }} </div> }
                 </form>
             </div>
         </div>

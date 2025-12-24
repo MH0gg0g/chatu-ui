@@ -1,6 +1,6 @@
 <div class="container py-4">
     <div class="d-flex mb-3 justify-content-between align-items-center">
-        <h4 class="m-0 brand gradient-text">Chatu</h4>
+        <h4 class="m-0 brand gradient-text">Chatu | {{ me }} </h4>
         <div>
             <button class="btn btn-sm btn-outline-light me-2" (click)="refresh()">Refresh</button>
             <button class="btn btn-sm btn-danger" (click)="logout()">Logout</button>
@@ -13,22 +13,21 @@
                 <div class="card-top">
                     <h6 class="card-title gradient-text">Online Users</h6>
                 </div>
-                <ul class="list-unstyled small">
-                    @for(u of online; track u) { <li><span class="badge-online">{{u}}</span></li> }
+                <ul class="list-unstyled small mb-3">
+                    @for(u of users(); track u) {<li><span class="badge-online">{{ u }}</span></li>}
                 </ul>
                 <div class="card-top mt-3">
                     <h6 class="card-title">Active Groups</h6>
                 </div>
                 <ul class="list-unstyled small">
-                    @for(g of groupKeys; track g) { <li><span class="pill">{{g}}</span> <small class="text-muted">({{groups[g]}})</small></li> }
+                    @for(g of groupKeys(); track g) { <li><span class="pill">{{ g }}</span> <small class="text-muted">({{ groups()[g] }})</small></li> }
                 </ul>
             </div>
         </div>
         <div class="col-12 col-md-8">
             <div class="card p-3 bg-card">
                 <div class="chat-window mb-2" #window>
-                    @for(m of messages; track m) {
-                    <div>
+                    <div *ngFor="let m of messages$ | async" class="mb-2">
                         <div [ngClass]="{'message-me': m.from===me, 'message-other': m.from!==me}">
                             <div class="message-bubble"> <strong class="small">{{m.from}}</strong>
                                 <div>{{m.content}}</div>
@@ -36,12 +35,11 @@
                             </div>
                         </div>
                     </div>
-                    }
                 </div>
                 <form (ngSubmit)="sendPrivate()" class="d-flex gap-2">
                     <input class="form-control" placeholder="recipient" [(ngModel)]="recipient" name="recipient"
                         required />
-                    <input class="form-control" placeholder="message" [(ngModel)]="message" name="message" required />
+                    <input class="form-control" placeholder="message" [(ngModel)]="privateMessage" name="message" required />
                     <button class="btn btn-primary" type="submit">Send</button>
                 </form>
                 <hr />
