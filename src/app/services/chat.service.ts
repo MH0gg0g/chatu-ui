@@ -1,21 +1,27 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { Client, Message } from '@stomp/stompjs';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { ChatMessage } from '../models/chat-message';
 import { AuthService } from './auth.service';
+import SockJS from 'sockjs-client';
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {
-  private client: Client;
-  private connected = signal(false);  // ???
-  private privateMessages$ = new BehaviorSubject<any[]>([]);
-  private groupMessages$ = new BehaviorSubject<Message & { groupId?: string }>({} as Message & { groupId?: string });
+  private client!: Client;
+  private connected = signal(false);
+  public messages = signal<ChatMessage[]>([]);
 
   private baseUrl = 'localhost:8080';
 
   constructor(private http: HttpClient, private auth: AuthService) {
+  }
+
+  connect() {
     this.client = new Client({
       brokerURL: `http://${this.baseUrl}/ws/chat`,
+      // stomp vs sockjs fallback
+      // webSocketFactory: () => new SockJS('http://${this.baseUrl}/ws/chat'),
       connectHeaders: {
         Authorization: `Bearer ${this.auth.getToken()}`
       },
@@ -23,64 +29,57 @@ export class ChatService {
         console.log("Connected to chat server");
         this.connected.set(true);
         this.subscribeToPrivate();
+
       },
-      onStompError: (frame) => {
-        console.error('Broker reported error: ' + frame.headers['message']);
-        console.error('Additional details: ' + frame.body);
-      },
-      debug: () => { console.log("Disconnected, retrying in 5s.") },
       reconnectDelay: 5000
     });
 
     this.client.activate(); // handles handshake
   }
 
+  appendMessage(from: string, content: string, timeStamp: string, type: string) {
+    const newMessage: ChatMessage = { from, content, timeStamp, type };
+    this.messages.update(msgs => [...msgs, newMessage]);
+  }
+
   subscribeToPrivate() {
     this.client.subscribe('/user/queue/private', (msg: Message) => {
       if (msg.body) {
-        const nwMessage = JSON.parse(msg.body);
-        const currentMessages = this.privateMessages$.getValue();
-        this.privateMessages$.next([...currentMessages, nwMessage]);
+        const body = JSON.parse(msg.body);
+        this.appendMessage(body.from, body.content, body.timeStamp, 'private');
       }
-    });
-  }
-
-  sendPrivate(to: string, content: string) {
-    this.client.publish({
-      destination: '/app/private.send', // Matches MessageMapping 
-      body: JSON.stringify({ to, content })
     });
   }
 
   subscribeToGroup(groupId: string) {
     this.client.subscribe(`/topic/group.${groupId}`, (msg: Message) => {
       if (msg.body) {
-        const newMessage = JSON.parse(msg.body);
-        const currentMessages = this.privateMessages$.getValue();
-        this.privateMessages$.next([...currentMessages, newMessage]);
+        const body = JSON.parse(msg.body);
+        this.appendMessage(body.from, body.content, body.timeStamp, 'Group');
       }
     });
   }
 
-  sendGroup(groupId: string, content: string) {
-    this.subscribeToGroup(groupId);
+  sendPrivate(id: string, content: string) {
     this.client.publish({
-      destination: '/app/group.send', // Matches MessageMapping 
-      body: JSON.stringify({ groupId, content })
+      destination: '/app/private.send', // Matches MessageMapping | private / group
+      body: JSON.stringify({ id, content })
+    });
+  }
+
+  sendGroup(id: string, content: string, isSub: boolean) {
+    // if (!isSub) {
+      this.subscribeToGroup(id);
+    // }
+    this.client.publish({
+      destination: '/app/group.send', // Matches MessageMapping | private / group
+      body: JSON.stringify({ id, content })
     });
   }
 
   disconnect(): void {
     this.client?.deactivate();
     this.connected.set(false);
-  }
-
-  getPrivate() {
-    return this.privateMessages$.asObservable();
-  }
-
-  getGroup() {
-    return this.groupMessages$.asObservable();
   }
 
   getOnlineUsers(): Observable<string[]> {

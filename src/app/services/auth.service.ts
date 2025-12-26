@@ -17,7 +17,6 @@ export class AuthService {
     return this.http.post<LoginRes>(`${this.baseUrl}/login`, body).pipe(
       tap((resp) => {
         if (resp && resp.token) {
-          console.log('login response', resp);
           localStorage.setItem('jwt_token', resp.token);
           localStorage.setItem('active_user', username);
           this._current.next(username);

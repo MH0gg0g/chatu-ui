@@ -18,7 +18,9 @@
                         <button class="btn btn-primary" type="submit">Login</button>
                         <a routerLink="/register" class="btn btn-link accent-link">Register</a>
                     </div>
-                    @if (errorMsg()) { <div class="alert alert-danger"> {{ errorMsg() }} </div> }
+                    @for (error of errors() | keyvalue; track error.key) {
+                    <div class="alert alert-danger">{{ error.value }}</div>
+                    }
                 </form>
             </div>
         </div>

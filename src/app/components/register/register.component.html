@@ -22,9 +22,15 @@
                         <button class="btn btn-primary" type="submit">Register</button>
                         <a routerLink="/login" class="btn btn-link accent-link">Login</a>
                     </div>
-                    @if (successMsg() || errorMsg()) { <div
-                        [ngClass]="{'alert-success': successMsg(), 'alert-danger': errorMsg()}" class="alert"> {{
-                        successMsg() || errorMsg() }} </div> }
+                    <div>
+                        @if(successMsg()) {
+                        <div class="alert-success alert">{{ successMsg() }}</div>
+                        }
+                        @else if(hasErrors()) {
+                        @for (error of errors() | keyvalue; track error.key) { <div class="alert alert-danger">{{
+                            error.value }}</div> }
+                        }
+                    </div>
                 </form>
             </div>
         </div>

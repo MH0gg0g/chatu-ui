@@ -20,34 +20,32 @@
                     <h6 class="card-title">Active Groups</h6>
                 </div>
                 <ul class="list-unstyled small">
-                    @for(g of groupKeys(); track g) { <li><span class="pill">{{ g }}</span> <small class="text-muted">({{ groups()[g] }})</small></li> }
+                    @for(g of groupKeys(); track g) { <li><span class="pill">{{ g }} ({{ groups()[g] }}) </span></li> }
                 </ul>
             </div>
         </div>
         <div class="col-12 col-md-8">
             <div class="card p-3 bg-card">
                 <div class="chat-window mb-2" #window>
-                    <div *ngFor="let m of messages$ | async" class="mb-2">
+                    @for (m of msgCache(); track $index){
+                    <div class="mb-2">
                         <div [ngClass]="{'message-me': m.from===me, 'message-other': m.from!==me}">
-                            <div class="message-bubble"> <strong class="small">{{m.from}}</strong>
+                            <div class="message-bubble"> <strong class="small">{{m.from}} {{ (m.type) }}</strong>
                                 <div>{{m.content}}</div>
-                                <small class="text-muted">{{m.timestamp}}</small>
+                                <small class="text-muted">{{m.timeStamp}}</small>
                             </div>
                         </div>
                     </div>
+                    }
                 </div>
-                <form (ngSubmit)="sendPrivate()" class="d-flex gap-2">
-                    <input class="form-control" placeholder="recipient" [(ngModel)]="recipient" name="recipient"
-                        required />
-                    <input class="form-control" placeholder="message" [(ngModel)]="privateMessage" name="message" required />
-                    <button class="btn btn-primary" type="submit">Send</button>
-                </form>
                 <hr />
-                <form (ngSubmit)="sendGroup()" class="d-flex gap-2 mt-2">
-                    <input class="form-control" placeholder="groupId" [(ngModel)]="groupId" name="groupId" required />
-                    <input class="form-control" placeholder="message to group" [(ngModel)]="groupMessage"
-                        name="groupMessage" required />
-                    <button class="btn btn-secondary" type="submit">Send to Group</button>
+                <form class="d-flex gap-2 mt-2">
+                    <input class="form-control" placeholder="recipient or Group Id" [(ngModel)]="recipient"
+                        name="recipient" required />
+                    <input class="form-control" placeholder="message" [(ngModel)]="newMessage" name="newMessage"
+                        required />
+                    <button class="btn btn-primary" (click)="onPrivateSend()">Send Private</button>
+                    <button class="btn btn-primary" (click)="onGroupSend()">Send Group</button>
                 </form>
             </div>
         </div>
